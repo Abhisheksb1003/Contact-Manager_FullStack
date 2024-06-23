@@ -1,9 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const AddContact=()=>{
+
+    let [state,setState]=useState({
+        loading:false,
+        contact:{
+            name:'',
+            photo:'',
+            contact:'',
+            email:'',
+            company:'',
+            title:'',
+            groupId:''
+        },
+        errorMessage:''
+    })
+
+    let updateInput=(e)=>{
+        setState({
+            ...state,
+            contact:{
+                ...state.contact,
+                [e.target.name]:e.target.value
+            }
+        })
+    }
+
+let {loading,contact,errorMessage}=state
+
     return (
         <React.Fragment>
+            <pre>{JSON.stringify(state.contact)}</pre>
             <section className="add-contact p-3">
                 <div className="container">
                     <div className="row">
@@ -17,25 +45,60 @@ const AddContact=()=>{
                         <div className="col-md-4">
                             <form>
                                 <div className="mb-2">
-                                    <input type="text" className="form-control" placeholder="Name" />
+                                    <input
+                                    required={true}
+                                    name="name"
+                                    value={contact.name}
+                                    onChange={updateInput}
+                                    type="text" className="form-control" placeholder="Name" />
                                 </div>
                                 <div className="mb-2">
-                                    <input type="text" className="form-control" placeholder="Photo Url" />
+                                    <input 
+                                    required={true}
+                                    name="photo"
+                                    value={contact.photo}
+                                    onChange={updateInput}
+                                    type="text" className="form-control" placeholder="Photo Url" />
                                 </div>
                                 <div className="mb-2">
-                                    <input type="number" className="form-control" placeholder="Mobile Number" />
+                                    <input 
+                                    required={true}
+                                    name="contact"
+                                    value={contact.contact}
+                                    onChange={updateInput}
+                                    type="number" className="form-control" placeholder="Mobile Number" />
                                 </div>
                                 <div className="mb-2">
-                                    <input type="email" className="form-control" placeholder="Email" />
+                                    <input 
+                                    required={true}
+                                    name="email"
+                                    value={contact.email}
+                                    onChange={updateInput}
+                                    type="email" className="form-control" placeholder="Email" />
                                 </div>
                                 <div className="mb-2">
-                                    <input type="text" className="form-control" placeholder="Company" />
+                                    <input 
+                                    required={true}
+                                    name="company"
+                                    value={contact.company}
+                                    onChange={updateInput}
+                                    type="text" className="form-control" placeholder="Company" />
                                 </div>
                                 <div className="mb-2">
-                                    <input type="text" className="form-control" placeholder="Tiltle" />
+                                    <input 
+                                    required={true}
+                                    name="title"
+                                    value={contact.title}
+                                    onChange={updateInput}
+                                    type="text" className="form-control" placeholder="Tiltle" />
                                 </div>
                                 <div className="mb-2">
-                                    <select className="form-control">
+                                    <select 
+                                    required={true}
+                                    name="groupId"
+                                    value={contact.groupId}
+                                    onChange={updateInput}
+                                    className="form-control">
                                         <option vlaue="">Select Group</option>
                                         <option vlaue="">Friend</option>
                                         <option vlaue="">Family</option>

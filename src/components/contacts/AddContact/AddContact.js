@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
+import { Contactservices } from '../../../services/ContactServices';
 
 const AddContact=()=>{
+
+    let navigate=useNavigate();
 
     let [state,setState]=useState({
         loading:false,
@@ -27,11 +30,27 @@ const AddContact=()=>{
         })
     }
 
+    let submitForm= async(event)=>{
+        event.preventDefault()
+        try{
+            let response=await Contactservices.createContact(state.contact)
+            if(response){
+                navigate('/contacts/list', {replace:true})
+            }
+
+        }
+        catch(error){
+            setState({...state,errorMessage:error.message})
+            navigate('/contacts/add', {replace:false})
+        }
+
+    }
+
 let {loading,contact,errorMessage}=state
 
     return (
         <React.Fragment>
-            <pre>{JSON.stringify(state.contact)}</pre>
+           
             <section className="add-contact p-3">
                 <div className="container">
                     <div className="row">
@@ -43,7 +62,7 @@ let {loading,contact,errorMessage}=state
                     <div className="container mt-3">
                     <div className="row">
                         <div className="col-md-4">
-                            <form>
+                            <form onSubmit={submitForm}>
                                 <div className="mb-2">
                                     <input
                                     required={true}

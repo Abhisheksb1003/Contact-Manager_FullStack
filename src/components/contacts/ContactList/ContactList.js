@@ -5,9 +5,14 @@ import Spinner from "../../Spinner/Spinner";  // Make sure this path is correct
 
 const ContactList = () => {
 
+    let [query,setQuery]=useState({
+        text:''
+    })
+
     const [state, setState] = useState({
         loading: false,
         contacts: [],
+        filteredcontacts: [],
         errorMessage: ""
     });
 
@@ -20,7 +25,8 @@ const ContactList = () => {
                     ...prevState,
                     loading: false,
                     contacts: response.data,
-                    errorMessage: ""
+                    filteredcontacts: response.data
+                    
                 }));
             } catch (error) {
                 setState(prevState => ({
@@ -34,7 +40,47 @@ const ContactList = () => {
         fetchContacts();
     }, []);
 
-    let { loading, contacts, errorMessage } = state;
+    let clickDelete=async(contactId)=>{
+        try{
+            let response=await Contactservices.deleteContact(contactId)
+            if(response){
+                setState(prevState => ({ ...prevState, loading: true }));
+                let response = await Contactservices.getALLContacts();
+                setState(prevState => ({
+                    ...prevState,
+                    loading: false,
+                    contacts: response.data,
+                    filteredcontacts: response.data
+                    
+                }));
+
+            }
+
+        }
+        catch(error){
+            setState(prevState => ({
+                ...prevState,
+                loading: false,
+                errorMessage: error.message
+            }));
+
+        }
+
+    }
+
+    let searchContacts=(event)=>{
+        setQuery({...query,text:event.target.value})
+        let thecontact=state.contacts.filter(contact=>{
+            return contact.name.toLowerCase().includes(event.target.value.toLowerCase())
+        })
+        setState({
+            ...state,
+            filteredcontacts:thecontact
+        })
+
+    }
+
+    let { loading, contacts, errorMessage ,filteredcontacts} = state;
 
     return (
         <React.Fragment>
@@ -57,7 +103,11 @@ const ContactList = () => {
                             <form className="row">
                                 <div className="col">
                                     <div className="mb-2">
-                                        <input type="text" className="form-control" placeholder="Search Names" />
+                                        <input 
+                                        name="text"
+                                        value={query.text}
+                                        onChange={searchContacts}
+                                        type="text" className="form-control" placeholder="Search Names" />
                                     </div>
                                 </div>
                                 <div className="col">
@@ -77,8 +127,8 @@ const ContactList = () => {
                         <div className="container">
                             <div className="row">
                                 {
-                                    contacts.length>0 &&
-                                    contacts.map(contact=>{
+                                    filteredcontacts.length>0 &&
+                                    filteredcontacts.map(contact=>{
                                         return (<div className="col-md-6" key={contact.id}>
                                             <div className="card my-2">
                                                 <div className="card-body">
@@ -105,10 +155,10 @@ const ContactList = () => {
                                                             <Link to={`/contacts/view/${contact.id}`} className="btn btn-warning my-1">
                                                                 <i className="fa fa-eye" />
                                                             </Link>
-                                                            <Link to={`/contacts/edit/:ContactId`} className="btn btn-primary my-1">
+                                                            <Link to={`/contacts/edit/${contact.id}`} className="btn btn-primary my-1">
                                                                 <i className="fa fa-pen" />
                                                             </Link>
-                                                            <button className="btn btn-danger my-1">
+                                                            <button className="btn btn-danger my-1" onClick={()=>clickDelete(contact.id)}>
                                                                 <i className="fa fa-trash" />
                                                             </button>
                                                         </div>
